@@ -1,0 +1,3 @@
+# Photo Mosaic
+
+A photo wall in mixed tile sizes (small, wide, tall, large). It's inspired by the Stanford GSB centennial photo wall and Moore's photo-led sections. It uses a dense CSS grid whose columns are `minmax(min(N, half the width), 1fr)`, so there are always at least two columns and 2-wide tiles never overflow. No media queries are needed. Captions ship visible, so they work on phones and without JS. On devices that can hover, the script hides them and reveals each one on hover or keyboard focus, with an optional photo zoom. The "Collage" look adds white frames and a slight fixed tilt per tile that straightens on hover. Because the grid packs tiles to fill gaps, the visual order can differ a little from the list order.

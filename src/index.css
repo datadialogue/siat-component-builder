@@ -1,0 +1,21 @@
+@import 'tailwindcss';
+
+:root {
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color-scheme: light;
+}
+body { margin: 0; }
+
+/* Rich text editor content */
+.rte p { margin: 0 0 .6em; }
+.rte p:last-child { margin-bottom: 0; }
+.rte h2 { font-size: 1.25em; font-weight: 700; margin: .6em 0 .3em; }
+.rte h3 { font-size: 1.1em; font-weight: 700; margin: .6em 0 .3em; }
+.rte h4 { font-size: 1em; font-weight: 700; margin: .6em 0 .3em; }
+.rte ul { list-style: disc; padding-left: 1.3em; margin: 0 0 .6em; }
+.rte ol { list-style: decimal; padding-left: 1.4em; margin: 0 0 .6em; }
+.rte blockquote { border-left: 3px solid #cc0633; padding-left: .8em; color: #52525b; font-style: italic; margin: 0 0 .6em; }
+.rte a { color: #a6192e; text-decoration: underline; }
+.rte hr { border: 0; border-top: 1px solid #e4e4e7; margin: .8em 0; }
+.rte p.is-editor-empty:first-child::before { content: 'Write here…'; color: #a1a1aa; float: left; height: 0; pointer-events: none; }

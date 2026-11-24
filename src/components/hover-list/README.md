@@ -1,0 +1,3 @@
+# Hover List
+
+A big-type index of programs, labs or people, based on VCUarts' list of majors and Cornell's program list. Hovering or focusing a row dims the other rows and shows its image, either floating by the cursor or in a side panel that swaps images. Text sizes scale with the viewport through `clamp()`, so no media queries are needed. On phones the first tap opens the row inline (image and text) and the second tap follows the link. Without scripts it is a plain list of links with labels and text, and the images stay hidden. Visitors who prefer reduced motion get a simple image swap with no cursor following.

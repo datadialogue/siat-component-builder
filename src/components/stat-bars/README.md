@@ -1,0 +1,3 @@
+# Stat Bars
+
+Proof shown as visual bars or rings, after SVA ixD's "88% work in design and technology fields" bars and the stat rows on Wyss and SAIC. Each item is a 0–100 value, a suffix (default `%`), a sentence and an optional source note. An optional side label (for example "Where do graduates work?") sits to the left and wraps above the items on narrow screens. Rings use an inline `conic-gradient` with a radial mask, so there is no image and no stylesheet. The markup ships the final widths and numbers. The runtime resets them to 0 and fills them when they scroll into view, and does nothing for reduced-motion visitors.

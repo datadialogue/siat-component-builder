@@ -1,0 +1,24 @@
+/*
+ * Approximation of SFU CLF4 global CSS (www.sfu.ca .../clf4/default/css/default.min.css)
+ * — only the rules that affect pasted HTML-component content. Toggle "SFU CSS" in the
+ * preview toolbar to load the real stylesheet instead.
+ */
+@font-face { font-family: November; src: url(https://www.sfu.ca/etc/designs/clf/clientlibs/clf4/default/fonts/NovemberFNIVF.woff2) format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+@font-face { font-family: November; src: url(https://www.sfu.ca/etc/designs/clf/clientlibs/clf4/default/fonts/NovemberFNIVFItalic.woff2) format("woff2"); font-weight: 100 900; font-style: italic; font-display: swap; }
+html { font-size: 10px; -webkit-text-size-adjust: 100%; }
+html, body, div, span, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, a, img, ol, ul, li, figure, figcaption, details, summary, section, article, footer, header, button, small, strong, em {
+  margin: 0; padding: 0; border: 0; font: inherit; vertical-align: baseline;
+}
+body { font-family: "November", "Arial", sans-serif; color: #000; background: #fff; line-height: 1; }
+img { width: 100%; max-width: 100%; display: inherit; }
+.page-content__main :is(p, ul, blockquote, ol, img) { margin-bottom: 3rem; font-size: 1.7rem; line-height: 2.6rem; }
+.page-content__main h1 { letter-spacing: normal; color: #414042; text-transform: uppercase; margin-bottom: 3rem; font-size: 4.6rem; line-height: 5.2rem; font-weight: 800; font-stretch: 83%; }
+.page-content__main h2 { color: #414042; margin-bottom: 3rem; font-size: 3.7rem; line-height: 4.2rem; font-weight: 800; font-stretch: 83%; }
+.page-content__main h3 { color: #49484a; margin-bottom: 3rem; font-size: 2.5rem; line-height: 2.9rem; font-weight: 800; font-stretch: 83%; }
+.page-content__main h4 { color: #49484a; margin-bottom: 3rem; font-size: 1.9rem; text-transform: uppercase; font-weight: 800; }
+.page-content__main h5 { color: #000; margin-bottom: 3rem; font-size: 1.3rem; letter-spacing: .21rem; text-transform: uppercase; }
+.page-content__main ul { padding-left: 3rem; list-style: none; }
+.page-content__main ul > li { position: relative; }
+.page-content__main ul > li:before { content: ""; position: absolute; left: -2rem; top: 1rem; width: .8rem; height: .8rem; background: #a6192e; }
+.page-content__main a { color: #6d6f71; text-decoration: underline; }
+.page-content__main a:hover { color: #cc0633; }
