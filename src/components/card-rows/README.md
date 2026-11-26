@@ -1,0 +1,3 @@
+# Card Rows
+
+Several titled rows of cards stacked on top of each other, each one scrolling sideways on its own: the streaming-app pattern used for research and news on the MIT Media Lab homepage. Good for student work by topic, research groups, or news by type. Each row has a title, an optional "See all" link (also shown as a tile at the end of the row) and its own cards. Every track is a native overflow row with scroll-snap and works without script. The runtime adds tall edge arrows that fade in on hover and page through whole cards, or round header arrows, plus page marks and arrow-key support. The defaults are real projects from sfu.ca/siat/showcase.

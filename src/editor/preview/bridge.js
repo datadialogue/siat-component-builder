@@ -36,9 +36,10 @@
     if (!selected) return;
     const css = (v) => (window.CSS && CSS.escape ? CSS.escape(v) : v);
     let el = mount.querySelector(`[data-sfub-path="${css(selected)}"]`);
-    if (!el) {
-      const m = /^([\w]+)\.(\d+)/.exec(selected);
-      if (m) el = mount.querySelector(`[data-sfub-item="${m[1]}.${m[2]}"]`);
+    // Otherwise the deepest list item on the path (handles nested lists like rows.0.cards.2).
+    const parts = selected.split('.');
+    for (let n = parts.length; !el && n > 1; n--) {
+      if (/^\d+$/.test(parts[n - 1])) el = mount.querySelector(`[data-sfub-item="${css(parts.slice(0, n).join('.'))}"]`);
     }
     if (el) el.setAttribute('data-sfub-selected', '');
   }
@@ -47,7 +48,7 @@
     const m = selected && /^([\w]+)\.(\d+)/.exec(selected);
     if (!m) return;
     const root = mount.querySelector('[data-sfub]');
-    if (root) root.dispatchEvent(new CustomEvent('sfub:focus', { detail: { key: m[1], index: +m[2] } }));
+    if (root) root.dispatchEvent(new CustomEvent('sfub:focus', { detail: { key: m[1], index: +m[2], path: selected } }));
   }
 
   function pathOf(target) {
@@ -117,8 +118,25 @@
   bar.style.cssText = 'position:fixed;z-index:99999;background:#0b78e6;border-radius:2px;pointer-events:none;display:none;box-shadow:0 0 0 2px #fff;';
   document.body.appendChild(bar);
 
+  // "rows.0.cards.3" -> { key: "rows.0.cards", index: 3 }. Keys may be nested list paths.
+  function itemId(el) {
+    const v = el.getAttribute('data-sfub-item');
+    const i = v.lastIndexOf('.');
+    return { key: v.slice(0, i), index: +v.slice(i + 1) };
+  }
+  // Items of exactly this list (not of lists nested inside its items).
+  function itemsOf(listKey) {
+    return Array.from(mount.querySelectorAll(`[data-sfub-item^="${listKey}."]`)).filter((el) => itemId(el).key === listKey);
+  }
+  // Closest ancestor item that belongs to this list.
+  function closestItem(target, listKey) {
+    let el = target.closest && target.closest('[data-sfub-item]');
+    while (el && itemId(el).key !== listKey) el = el.parentElement && el.parentElement.closest('[data-sfub-item]');
+    return el;
+  }
+
   function horizontal(listKey) {
-    const items = mount.querySelectorAll(`[data-sfub-item^="${listKey}."]`);
+    const items = itemsOf(listKey);
     if (items.length < 2) return false;
     const a = items[0].getBoundingClientRect(), b = items[1].getBoundingClientRect();
     // Tolerant of hover transforms (e.g. a lifted card sits a few px higher).
@@ -128,8 +146,8 @@
   document.addEventListener('dragstart', (e) => {
     const it = e.target.closest && e.target.closest('[data-sfub-item]');
     if (!it || editing) return;
-    const [key, idx] = it.getAttribute('data-sfub-item').split('.');
-    drag = { key, from: +idx, el: it, horiz: horizontal(key) };
+    const { key, index } = itemId(it);
+    drag = { key, from: index, el: it, horiz: horizontal(key) };
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', 'sfub');
     setTimeout(() => { it.style.opacity = '.35'; }, 0);
@@ -157,12 +175,12 @@
       return;
     }
     if (!drag) return;
-    const t = e.target.closest(`[data-sfub-item^="${drag.key}."]`);
+    const t = closestItem(e.target, drag.key);
     if (!t) { bar.style.display = 'none'; return; }
     e.preventDefault();
     const r = t.getBoundingClientRect();
     const after = drag.horiz ? e.clientX > r.left + r.width / 2 : e.clientY > r.top + r.height / 2;
-    drag.to = +t.getAttribute('data-sfub-item').split('.')[1] + (after ? 1 : 0);
+    drag.to = itemId(t).index + (after ? 1 : 0);
     bar.style.display = 'block';
     if (drag.horiz) {
       Object.assign(bar.style, { left: `${(after ? r.right : r.left) - 2}px`, top: `${r.top}px`, width: '4px', height: `${r.height}px` });

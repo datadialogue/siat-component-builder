@@ -2,10 +2,12 @@ import type { CSSProperties } from 'react';
 import { Signpost } from 'lucide-react';
 import { defineComponent, type ImageValue } from '../../lib/types';
 import { placeholderImage } from '../../lib/placeholder';
+import { SFU } from '../../theme/theme';
 import runtime from './runtime.es5.js?raw';
 
 /*
- * Path Finder: a big sentence with a choice ("I want to [select]") or a row of chips.
+ * Path Finder: a big sentence with a choice ("I want to [dropdown]") or a row of chips.
+ * The dropdown is a custom ARIA listbox (a native <select>'s open list can't be styled).
  * Each choice shows a result panel (image, title, text, tags, link).
  * Without JS every option renders as a stacked panel with its label as a heading;
  * the runtime shows the controls and keeps one panel visible.
@@ -89,6 +91,8 @@ export default defineComponent<Props>({
     const line = t.dark ? '#ffffff' : accent;
     const chipOn = `background:${accent};color:${t.onAccent};border-color:${accent};`;
     const chipOff = `background:transparent;color:${t.heading};border-color:${t.dark ? 'rgba(255,255,255,.5)' : t.border};`;
+    // The open list is always a white card, so it needs an accent that reads on white.
+    const pop = t.dark ? SFU.red : accent;
     const cardBg = t.dark ? t.surface : t.bg === 'transparent' ? t.surfaceAlt : '#ffffff';
 
     const chip: CSSProperties = sx.buttonReset({
@@ -99,24 +103,49 @@ export default defineComponent<Props>({
 
     return (
       <div {...ctx.root('path-finder', { padding: t.bg === 'transparent' ? 0 : '32px' })}
-        data-on={chipOn} data-off={chipOff} data-anim={p.anim} data-mode={p.mode}>
+        data-on={chipOn} data-off={chipOff} data-anim={p.anim} data-mode={p.mode}
+        data-opt-act={`background:#f5f5f5;box-shadow:inset 3px 0 0 ${pop};`} data-opt-idle="background:transparent;box-shadow:inset 3px 0 0 transparent;">
         {p.eyebrow && <div {...ctx.edit('eyebrow', 'text')} style={sx.eyebrow({ margin: '0 0 14px 0', color: t.dark ? t.heading : t.accent })}>{p.eyebrow}</div>}
 
         {/* Controls: hidden until the runtime runs (the stacked panels below cover no-JS). */}
         <div className="sfupf-ctrl" style={{ display: 'none', margin: '0 0 28px 0', padding: 0 }}>
           {p.mode === 'select' ? (
             <div style={sx.heading(fs, { fontSize: fsc, fontWeight: 800, lineHeight: 1.2 })}>
-              <label htmlFor={sid} {...ctx.edit('lead', 'text')} style={{ margin: '0 0.25em 0 0', padding: 0, font: 'inherit', color: 'inherit', display: 'inline' }}>{p.lead}</label>
-              <span style={{ position: 'relative', display: 'inline-block', maxWidth: '100%', margin: 0, padding: 0, verticalAlign: 'baseline' }}>
-                <select id={sid} className="sfupf-select"
+              <span id={`${sid}-lead`} {...ctx.edit('lead', 'text')} style={{ margin: '0 0.25em 0 0', padding: 0 }}>{p.lead}</span>
+              {/* Custom listbox: a native <select>'s open list can't be styled inline. */}
+              <span className="sfupf-dd" style={{ position: 'relative', display: 'inline-block', maxWidth: '100%', margin: 0, padding: 0, verticalAlign: 'baseline' }}>
+                <button type="button" id={`${sid}-btn`} className="sfupf-btn" aria-haspopup="listbox" aria-expanded="false"
+                  aria-controls={`${sid}-list`} aria-labelledby={`${sid}-lead ${sid}-btn`}
                   style={sx.buttonReset({
-                    fontFamily: t.font, fontSize: '1em', fontWeight: 800, fontStretch: '83%', lineHeight: 1.2, color: line,
-                    padding: '0 1.1em 2px 0', borderBottom: `0.08em solid ${line}`, borderRadius: 0, maxWidth: '100%',
-                    textOverflow: 'ellipsis', backgroundColor: 'transparent',
+                    display: 'inline-block', maxWidth: '100%', fontFamily: t.font, fontSize: '1em', fontWeight: 800, fontStretch: '83%',
+                    lineHeight: 1.2, color: line, textAlign: 'left', whiteSpace: 'normal', padding: '0 0 .04em 0',
+                    borderBottom: `0.08em solid ${line}`, transition: 'opacity .2s ease',
                   })}>
-                  {p.options.map((o, i) => <option key={o._id ?? i} value={String(i)} style={{ color: '#000000', background: '#ffffff' }}>{o.label}</option>)}
-                </select>
-                <span aria-hidden="true" style={{ position: 'absolute', right: '0.1em', top: '50%', margin: '-0.32em 0 0 0', padding: 0, fontSize: '0.5em', lineHeight: 1, color: line, pointerEvents: 'none' }}>&#9660;</span>
+                  <span className="sfupf-val" style={{ margin: 0, padding: 0 }}>{p.options[0]?.label}</span>
+                  <span aria-hidden="true" className="sfupf-chev"
+                    style={{ display: 'inline-block', width: '.3em', height: '.3em', margin: '0 .12em .2em .38em', padding: 0, borderRight: `.075em solid ${line}`, borderBottom: `.075em solid ${line}`, transform: 'rotate(45deg)', transition: 'transform .25s ease, margin .25s ease', verticalAlign: 'middle' }} />
+                </button>
+                <span id={`${sid}-list`} className="sfupf-list" role="listbox" tabIndex={-1} aria-labelledby={`${sid}-lead`}
+                  style={{
+                    display: 'none', position: 'absolute', top: 'calc(100% + 12px)', left: 0, zIndex: 40, boxSizing: 'border-box',
+                    width: 'max-content', minWidth: 'max(100%, 260px)', maxWidth: 'min(90vw, 440px)', maxHeight: '60vh', overflowY: 'auto',
+                    margin: 0, padding: '8px', background: '#ffffff', borderRadius: `${Math.max(t.radius, 6)}px`,
+                    boxShadow: '0 18px 48px rgba(0,0,0,.22), 0 2px 8px rgba(0,0,0,.08)', border: '1px solid rgba(0,0,0,.06)',
+                    textAlign: 'left', fontFamily: t.font, fontSize: '16px', fontWeight: 400, fontStretch: '100%', lineHeight: 1.3,
+                    letterSpacing: 'normal', color: '#1a1a1a', outline: 'none', transformOrigin: '0 0',
+                  }}>
+                  {p.options.map((o, i) => (
+                    <span key={o._id ?? i} id={`${sid}-o${i}`} role="option" className="sfupf-opt" data-i={String(i)} aria-selected={i === 0 ? 'true' : 'false'}
+                      style={{ display: 'flex', alignItems: 'center', gap: '14px', margin: 0, padding: '10px 12px 10px 14px', borderRadius: `${t.radiusSm}px`, cursor: 'pointer', boxShadow: 'inset 3px 0 0 transparent', transition: 'background-color .15s ease, box-shadow .15s ease' }}>
+                      <span style={{ display: 'block', flex: '1 1 auto', minWidth: 0, margin: 0, padding: 0 }}>
+                        <span className="sfupf-ol" style={{ display: 'block', margin: 0, padding: 0, fontSize: '19px', fontWeight: 800, fontStretch: '83%', lineHeight: 1.2, color: '#1a1a1a' }}>{o.label}</span>
+                        {o.title && <span style={{ display: 'block', margin: '2px 0 0 0', padding: 0, fontSize: '13px', lineHeight: 1.3, color: '#6d6f71' }}>{o.title}</span>}
+                      </span>
+                      <span aria-hidden="true" className="sfupf-tick"
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 22px', width: '22px', height: '22px', margin: 0, padding: 0, borderRadius: '50%', background: pop, color: '#ffffff', fontSize: '12px', fontWeight: 700, lineHeight: 1, opacity: i === 0 ? 1 : 0, transition: 'opacity .15s ease' }}>&#10003;</span>
+                    </span>
+                  ))}
+                </span>
               </span>
               {p.after && <span {...ctx.edit('after', 'text')} style={{ margin: '0 0 0 0.2em', padding: 0 }}>{p.after}</span>}
             </div>

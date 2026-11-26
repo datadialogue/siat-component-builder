@@ -7,8 +7,8 @@ import type { ComponentDef } from '../lib/types';
 const modules = import.meta.glob<{ default: ComponentDef<any> }>('./*/index.tsx', { eager: true });
 
 const ORDER = [
-  'split-gallery', 'hero', 'card-grid', 'hover-reveal', 'rail', 'showcase', 'mosaic', 'marquee',
-  'statement', 'stats', 'stat-bars', 'quote-block',
+  'split-gallery', 'hero', 'card-grid', 'hover-reveal', 'rail', 'card-rows', 'showcase', 'mosaic', 'marquee',
+  'statement', 'rotator', 'stats', 'stat-bars', 'quote-block',
   'accordion', 'tabs', 'path-finder', 'hover-list', 'timeline',
   'color-blocks', 'composer',
 ];
